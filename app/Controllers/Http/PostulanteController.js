@@ -8,7 +8,14 @@ const { validation } = require('validator-error');
 class PostulanteController {
 
   index = async ({ request, response }) => {
-    return 'ok';
+    let { page, query_search, sort } = request.all();
+    let postulantes = Postulante.query();
+    // filtro 
+    if (query_search) postulantes.where('nombre_completo', 'like', `%${query_search}%`)
+    // ordenamiento
+    postulantes.orderBy('nombre_completo', sort == 'ASC' || sort == 'DESC' ? sort : 'ASC');
+    // response 
+    return await postulantes.paginate(page || 1, 20);
   }
 
   store = async ({ request, response }) => {
@@ -66,11 +73,10 @@ class PostulanteController {
       // validar postulante
       if (!postulante) throw new Error('El postulante no existe!');
       // guardar los datos
-      await postulante.save({ 
-        email: request.input('email'),
-        ubigeo_id: request.input('ubigeo_id'),
-        phone: request.input('phone')
-      });
+      postulante.email = request.input('email', ""),
+      postulante.ubigeo_id = request.input('ubigeo_id', ""),
+      postulante.phone = request.input('phone', "");
+      await postulante.save();
       // response 
       return {
         success: true,
@@ -87,8 +93,27 @@ class PostulanteController {
   }
 
   destroy = async ({ params, request, response}) => {
-    let { id } = params;
-    return id;
+    try {
+      let { id } = params;
+      let postulante = await Postulante.find(id);
+      // validar postulante
+      if (!postulante) throw new Error('El postulante no existe!');
+      // deshabilitar estado
+      postulante.estado = false;
+      await postulante.save();
+      // response 
+      return {
+        success: true,
+        code: 201,
+        message: "El postulante fué deshabilitado correctamente!"
+      };
+    } catch (error) {
+      return {
+        success: false,
+        code: 501,
+        message: error.message
+      }
+    }
   }
 
 }
