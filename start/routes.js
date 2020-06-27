@@ -37,6 +37,6 @@ addGroup(Route.group(() => {
   Route.resource('actividad', 'ActividadController').apiOnly();
 
 
-})).prefix('v1');
+}));
 
 

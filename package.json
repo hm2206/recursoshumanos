@@ -27,7 +27,7 @@
     "@adonisjs/validator": "^5.0.6",
     "mysql": "^2.18.1",
     "mysql2": "^2.1.0",
-    "validator-error": "^1.0.6"
+    "validator-error": "^1.1.2"
   },
   "devDependencies": {},
   "autoload": {
