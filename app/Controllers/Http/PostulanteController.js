@@ -53,12 +53,42 @@ class PostulanteController {
     }
   }
 
-  update = async ({ request, response }) => {
-
+  update = async ({ params, request, response }) => {
+    let { id } = params;
+    await validation(validate, request.all(), {
+      email: `required|unique:postulantes,email,email,${request.input('email' || "")}`,
+      ubigeo_id: "required|min:6|max:10",
+      phone: "required|min:9|max:12" 
+    });
+    // procesar
+    try {
+      let postulante = await Postulante.find(id);
+      // validar postulante
+      if (!postulante) throw new Error('El postulante no existe!');
+      // guardar los datos
+      await postulante.save({ 
+        email: request.input('email'),
+        ubigeo_id: request.input('ubigeo_id'),
+        phone: request.input('phone')
+      });
+      // response 
+      return {
+        success: true,
+        code: 201, 
+        message: "Los datos se actualizarón correctamente!"
+      }
+    } catch (error) {
+      return {
+        success: false,
+        code: 501,
+        message: error.message
+      }
+    }
   }
 
-  destroy = async ({ requst, response}) => {
-
+  destroy = async ({ params, request, response}) => {
+    let { id } = params;
+    return id;
   }
 
 }
