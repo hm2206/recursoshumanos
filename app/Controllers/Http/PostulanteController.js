@@ -21,26 +21,35 @@ class PostulanteController {
   store = async ({ request, response }) => {
     // validar request
     await validation(validate, request.all(), {
+      tipo_de_documento: "required|min:2|max:2",
+      numero_de_documento: "required|min:8|max:12|unique:postulantes",
       ape_paterno: "required|max:100",
       ape_materno: "required|max:100",
       nombres: "required|max:100",
-      tipo_de_documento: "required|min:2|max:2",
-      numero_de_documento: "required|min:8|max:12|unique:postulantes",
-      ubigeo_id: "required",
       fecha_de_nacimiento: "required|date",
+      genero: "required|min:1|max:1",
+      ubigeo_id: "required",
+      direccion: "required|max:100",
       phone: "required|min:9|number|max:12",
       email: "required|email|max:100|unique:postulantes"
     });
     // procesar
     try {
+      // validar edad
+      let year = new Date().getFullYear();
+      let newYear = new Date(request.fecha_de_nacimiento).getFullYear();
+      console.log(newYear);
       // crear postulante
       let postulante = await Postulante.create({
+        tipo_de_documento: request.input('tipo_de_documento'),
+        numero_de_documento: request.input('numero_de_documento'),
         ape_paterno: request.input('ape_paterno'),
         ape_materno: request.input('ape_materno'),
         nombres: request.input('nombres'),
-        tipo_de_documento: request.input('tipo_de_documento'),
-        numero_de_documento: request.input('numero_de_documento'),
+        fecha_de_nacimiento: request.input('fecha_de_nacimiento'),
+        genero: request.input('genero'),
         ubigeo_id: request.input('ubigeo_id'),
+        direccion: request.input('direccion'),
         fecha_de_nacimiento: request.input('fecha_de_nacimiento'),
         phone: request.input('phone'),
         email: request.input('email')

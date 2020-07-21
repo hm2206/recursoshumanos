@@ -25,7 +25,11 @@ addGroup(Route.group(() => {
   Route.resource('config_perfil_laboral', 'ConfigPerfilLaboralController').apiOnly();
 
   // Ruta Convocatoria
-  Route.resource('convocatoria', 'ConvocatoriaController').apiOnly();
+  Route.get('convocatoria', 'ConvocatoriaController.index').middleware(['entityId']);
+  Route.post('convocatoria', 'ConvocatoriaController.store');
+  Route.get('convocatoria/:id', 'ConvocatoriaController.show');
+  Route.post('convocatoria/:id/update', 'ConvocatoriaController.update');
+  Route.get('convocatoria/:id/actividades', 'ConvocatoriaController.actividades');
 
   // Ruta Requerimientos de Personal
   Route.resource('staff_requirement', 'StaffRequirementController').apiOnly();

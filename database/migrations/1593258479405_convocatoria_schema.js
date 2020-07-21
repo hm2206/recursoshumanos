@@ -11,6 +11,7 @@ class ConvocatoriaSchema extends Schema {
       table.text("observacion");
       table.string('fecha_inicio');
       table.string('fecha_final');
+      table.integer('entity_id').notNullable();
       table.enum('estado', ['CREADO', 'PUBLICADO', 'CANCELADO', 'TERMINADO']).defaultTo('CREADO');
       table.timestamps()
     })

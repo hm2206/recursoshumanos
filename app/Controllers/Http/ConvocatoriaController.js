@@ -1,5 +1,11 @@
 'use strict'
 
+const { validation, ValidatorError } = require('validator-error-adonis');
+const { validate } = use('Validator');
+const moment = require('moment');
+const Convocatoria = use('App/Models/Convocatoria');
+const Actividad = use('App/Models/Actividad');
+
 /** @typedef {import('@adonisjs/framework/src/Request')} Request */
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
 /** @typedef {import('@adonisjs/framework/src/View')} View */
@@ -18,19 +24,23 @@ class ConvocatoriaController {
    * @param {View} ctx.view
    */
   async index ({ request, response, view }) {
+    let { page, estado } = request.all();
+    let year = request.input('year', new Date().getFullYear());
+    let mes = request.input('mes', new Date().getMonth() + 1);
+    let convocatoria = Convocatoria.query()
+      .whereRaw(`(MONTH(fecha_inicio) = ${mes} AND YEAR(fecha_inicio) = ${year})`);
+    // filtrar por estado
+    if (estado) convocatoria = convocatoria.where('estado', '=', estado);
+    // get 
+    convocatoria = await convocatoria.paginate(page || 1, 20);
+    // response 
+      return {
+        success: true,
+        code: 201,
+        convocatoria
+      }
   }
 
-  /**
-   * Render a form to be used for creating a new convocatoria.
-   * GET convocatorias/create
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async create ({ request, response, view }) {
-  }
 
   /**
    * Create/save a new convocatoria.
@@ -41,6 +51,36 @@ class ConvocatoriaController {
    * @param {Response} ctx.response
    */
   async store ({ request, response }) {
+    // validar inputs
+    await validation(validate, request.all(), {
+      numero_de_convocatoria: "required|max:100|unique:convocatorias",
+      fecha_inicio: "required|date",
+      fecha_final: "required|date",
+      observacion: "required|max:255",
+      entity_id: "required"
+    });
+    // validar fechas
+    let fecha_inicio = moment(request.input('fecha_inicio')).valueOf();
+    let fecha_final = moment(request.input('fecha_final')).valueOf();
+    let fecha_current = moment().valueOf();
+    // validar fecha de inicio
+    if (fecha_inicio < fecha_current) throw new ValidatorError([{ field: "fecha_inicio", message: "La fecha de Inicio debe ser mayor a la fecha actual!" }]);
+    if (fecha_inicio >= fecha_final) throw new ValidatorError([{ field: "fecha_final", message: "La fecha Final debe ser mayor a la fecha de inicio!" }]);
+    // guardar
+    let convocatoria = await Convocatoria.create({
+      numero_de_convocatoria: request.input('numero_de_convocatoria'),
+      fecha_inicio: request.input('fecha_inicio'),
+      fecha_final: request.input('fecha_final'),
+      observacion: request.input('observacion'),
+      entity_id: request.input('entity_id')
+    });
+    // response
+    return {
+      success: true,
+      code: 201,
+      message: "La convocatoria ha sido registrada con exito!",
+      convocatoria
+    }
   }
 
   /**
@@ -52,19 +92,15 @@ class ConvocatoriaController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async show ({ params, request, response, view }) {
-  }
-
-  /**
-   * Render a form to update an existing convocatoria.
-   * GET convocatorias/:id/edit
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async edit ({ params, request, response, view }) {
+  async show ({ params, request }) {
+    let convocatoria = await Convocatoria.find(params.id);
+    if (!convocatoria) throw new Error("No se encontró la convocatoria");
+    // response 
+    return {
+      success: true,
+      code: 201,
+      convocatoria
+    }
   }
 
   /**
@@ -76,6 +112,23 @@ class ConvocatoriaController {
    * @param {Response} ctx.response
    */
   async update ({ params, request, response }) {
+    let convocatoria = await Convocatoria.find(params.id);
+    if (!convocatoria) throw new Error("No se encontró la convocatoría");
+    // validar 
+    await validation(validate, request.all(), {
+      fecha_final: 'required|date',
+      observacion: 'required|max:255'
+    });
+    // actualizar
+    convocatoria.fecha_final = request.input('fecha_final');
+    convocatoria.observacion = request.input('observacion');
+    await convocatoria.save();
+    // response
+    return {
+      success: true,
+      code: 201,
+      message: "La convocatoria se registró correctamente!"
+    }
   }
 
   /**
@@ -88,6 +141,13 @@ class ConvocatoriaController {
    */
   async destroy ({ params, request, response }) {
   }
+
+  actividades = async ({ params, request }) => {
+    return await Actividad.query()
+      .where('convocatoria_id', params.id)
+      .fetch();
+  }
+
 }
 
 module.exports = ConvocatoriaController

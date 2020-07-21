@@ -16,7 +16,7 @@ class RequisitoSchema extends Schema {
   }
 
   down () {
-    this.drop('requisito')
+    this.drop('requisitos')
   }
 }
 
