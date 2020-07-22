@@ -12,13 +12,13 @@ class AppProvider {
    * @param {Request} ctx.request
    * @param {Function} next
    */
-  async handle ({ request }, next) {
+  async handle ({ request, response }, next) {
     // configurar axios 
     await authentication.config(getClient(request));
     await authentication.config(getAuthorization(request));
     // validar app
     let { data } = await authentication.get(`app/me`);
-    if (!data.success) throw new Error(data.message);
+    if (!data.success) return response.send(data);
     // inject app
     request._app = data.app;
     request.api_authentication = authentication;

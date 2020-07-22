@@ -5,6 +5,7 @@ const { validate } = use('Validator');
 const moment = require('moment');
 const Convocatoria = use('App/Models/Convocatoria');
 const Actividad = use('App/Models/Actividad');
+const StaffRequirement = use('App/Models/StaffRequirement');
 
 /** @typedef {import('@adonisjs/framework/src/Request')} Request */
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
@@ -142,10 +143,32 @@ class ConvocatoriaController {
   async destroy ({ params, request, response }) {
   }
 
+  /**
+   * 
+   * @param {*} param0 
+   */
   actividades = async ({ params, request }) => {
-    return await Actividad.query()
+    let actividades = await Actividad.query()
       .where('convocatoria_id', params.id)
       .fetch();
+    // response
+    return {
+      success: true,
+      status: 201,
+      actividades
+    }
+  }
+
+  staffRequirements = async ({ params, request }) => {
+    let staff = await StaffRequirement.query()
+      .where('convocatoria_id', params.id)
+      .fetch();
+    // response
+    return {
+      success: true,
+      status: 201,
+      staff 
+    }
   }
 
 }

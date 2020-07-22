@@ -13,7 +13,8 @@ const addGroup = (group) => {
 addGroup(Route.group(() => {
 
   // Ruta de Postulantes
-  Route.resource('postulante', 'PostulanteController').apiOnly();
+  Route.get('postulante', 'PostulanteController.index');
+  Route.post('postulante', 'PostulanteController.store');
 
   // Ruta de Dependencias
   Route.resource('dependencia', 'DependeciaController').apiOnly();
@@ -30,9 +31,10 @@ addGroup(Route.group(() => {
   Route.get('convocatoria/:id', 'ConvocatoriaController.show');
   Route.post('convocatoria/:id/update', 'ConvocatoriaController.update');
   Route.get('convocatoria/:id/actividades', 'ConvocatoriaController.actividades');
+  Route.get('convocatoria/:id/staff_requirements', 'ConvocatoriaController.staffRequirements');
 
   // Ruta Requerimientos de Personal
-  Route.resource('staff_requirement', 'StaffRequirementController').apiOnly();
+  Route.get('staff_requirement', 'StaffRequirementController.index');
 
   // Ruta de Requisitos para el requerimiento del personal
   Route.resource('requisito', 'RequisitoController').apiOnly();

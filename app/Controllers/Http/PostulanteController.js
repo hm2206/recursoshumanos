@@ -2,7 +2,9 @@
 
 const Postulante = use('App/Models/Postulante')
 const { validate } = use('Validator')
-const { validation } = require('validator-error');
+const { validation, ValidatorError } = require('validator-error-adonis');
+const moment = require('moment');
+const Event = use('Event');
 
 
 class PostulanteController {
@@ -31,14 +33,14 @@ class PostulanteController {
       ubigeo_id: "required",
       direccion: "required|max:100",
       phone: "required|min:9|number|max:12",
-      email: "required|email|max:100|unique:postulantes"
+      email: "required|email|max:100|unique:postulantes",
+      redirect: "required|url"
     });
     // procesar
     try {
       // validar edad
-      let year = new Date().getFullYear();
-      let newYear = new Date(request.fecha_de_nacimiento).getFullYear();
-      console.log(newYear);
+      let year_current = moment().diff(request.input('fecha_de_nacimiento'), 'years');
+      if (year_current < 18) throw new ValidatorError([ { field: 'fecha_de_nacimiento', message: 'La fecha de nacimiento es invalidad!' } ]); 
       // crear postulante
       let postulante = await Postulante.create({
         tipo_de_documento: request.input('tipo_de_documento'),
@@ -54,6 +56,17 @@ class PostulanteController {
         phone: request.input('phone'),
         email: request.input('email')
       })
+      // generar token
+      let token = 123456789;
+      let params = JSON.stringify({
+        token: token,
+        data: "TUPLA 8888"
+      });
+      // link
+      let link = `${request.input('redirect')}&params=${params}`;
+      // send event
+      Event.fire('postulante::registered', request, postulante, link);
+      // response
       return {  
         success: true,
         code: 201,
