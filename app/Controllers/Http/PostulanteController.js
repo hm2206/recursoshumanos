@@ -34,7 +34,7 @@ class PostulanteController {
       direccion: "required|max:100",
       phone: "required|min:9|number|max:12",
       email: "required|email|max:100|unique:postulantes",
-      redirect: "required|url"
+      redirect: "required"
     });
     // procesar
     try {
