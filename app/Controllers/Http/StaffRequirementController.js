@@ -92,7 +92,6 @@ class StaffRequirementController {
         renovacion: request.input('renovacion', 0)
       });
     } catch (error) {
-      console.log(error);
       switch (error.code) {
         case 'ER_DUP_ENTRY':
           throw new ValidatorError([ { field: 'perfil_laboral_id', message: 'El requerimiento de personal ya está en uso'} ])
