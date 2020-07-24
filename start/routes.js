@@ -36,7 +36,7 @@ addGroup(Route.group(() => {
   Route.get('convocatoria/:id/staff_requirements', 'ConvocatoriaController.staffRequirements');
 
   // Ruta Requerimientos de Personal
-  Route.get('staff_requirement', 'StaffRequirementController.index');
+  Route.get('staff_requirement', 'StaffRequirementController.index').middleware(['entityId']);
   Route.post('staff_requirement', 'StaffRequirementController.store');
 
   // Ruta de Requisitos para el requerimiento del personal

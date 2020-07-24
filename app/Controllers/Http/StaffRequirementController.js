@@ -28,8 +28,10 @@ class StaffRequirementController {
     let mes = request.input('mes', new Date().getMonth() + 1);
     // get staff
     let staff = Staff.query()
-      .whereRaw(`(MONTH(fecha_inicio) = ${mes} AND YEAR(fecha_inicio) = ${year})`)
+      .whereRaw(`(MONTH(staff_requirements.fecha_inicio) = ${mes} AND YEAR(staff_requirements.fecha_inicio) = ${year})`)
+      .where('con.entity_id', request._entity.id)
       .join('perfil_laborals as per', 'per.id', 'staff_requirements.perfil_laboral_id')
+      .join('convocatorias as con', 'con.id', 'staff_requirements.convocatoria_id')
       .select('staff_requirements.*', 'per.nombre as perfil_laboral');
     // filtrar por estado 
     if (estado) staff = staff.where('staff_requirements.estado', '=', estado);
