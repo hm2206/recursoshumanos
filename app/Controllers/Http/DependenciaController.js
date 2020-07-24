@@ -1,8 +1,7 @@
 'use strict'
 
-/** @typedef {import('@adonisjs/framework/src/Request')} Request */
-/** @typedef {import('@adonisjs/framework/src/Response')} Response */
-/** @typedef {import('@adonisjs/framework/src/View')} View */
+const Dependencia = use('App/Models/Dependencia');
+const PerfilLaboral = use('App/Models/PerfilLaboral');
 
 /**
  * Resourceful controller for interacting with dependencias
@@ -15,21 +14,20 @@ class DependenciaController {
    * @param {object} ctx
    * @param {Request} ctx.request
    * @param {Response} ctx.response
-   * @param {View} ctx.view
    */
-  async index ({ request, response, view }) {
-  }
-
-  /**
-   * Render a form to be used for creating a new dependencia.
-   * GET dependencias/create
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async create ({ request, response, view }) {
+  async index ({ request, response }) {
+    let { page, query_search } = request.all();
+    let dependencia = Dependencia.query();
+    // filtro
+    if (query_search) dependencia.whereRaw(`(nombre like '%${query_search}%' OR descripcion like '%${query_search}%')`);
+    // get dependencia
+    dependencia = await dependencia.paginate(page || 1, 20);
+    // response 
+    return {
+      success: true,
+      status: 201,
+      dependencia
+    }
   }
 
   /**
@@ -64,7 +62,22 @@ class DependenciaController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async edit ({ params, request, response, view }) {
+  async perfilLaboral ({ params, request }) {
+    let { page, query_search } = request.all();
+    let perfil_laboral = PerfilLaboral.query()
+      .join('config_perfil_laborals as conf', 'conf.perfil_laboral_id', 'perfil_laborals.id')
+      .where('conf.dependencia_id', params.id)
+      .select('perfil_laborals.*')
+    // filtro 
+    if (query_search) perfil_laboral.whereRaw(`(nombre like '%${query_search}%' OR descripcion like '%${query_search}%')`);
+    // paginate
+    perfil_laboral = await perfil_laboral.paginate(page || 1, 20);
+    // response 
+    return {
+      success: true,
+      status: 201,
+      perfil_laboral
+    }
   }
 
   /**

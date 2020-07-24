@@ -17,7 +17,9 @@ addGroup(Route.group(() => {
   Route.post('postulante', 'PostulanteController.store');
 
   // Ruta de Dependencias
-  Route.resource('dependencia', 'DependeciaController').apiOnly();
+  Route.get('dependencia', 'DependenciaController.index');
+  Route.get('dependencia/:id', 'DependenciaController.show');
+  Route.get('dependencia/:id/perfil_laboral', 'DependenciaController.perfilLaboral');
 
   // Ruta para el Perfil Laboral
   Route.resource('perfil_laboral', 'PerfilLaboralController').apiOnly();
@@ -35,6 +37,7 @@ addGroup(Route.group(() => {
 
   // Ruta Requerimientos de Personal
   Route.get('staff_requirement', 'StaffRequirementController.index');
+  Route.post('staff_requirement', 'StaffRequirementController.store');
 
   // Ruta de Requisitos para el requerimiento del personal
   Route.resource('requisito', 'RequisitoController').apiOnly();
