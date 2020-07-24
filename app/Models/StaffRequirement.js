@@ -9,7 +9,11 @@ class StaffRequirement extends Model {
         super.boot();
 
         // add hooks
-        this.addHook('beforeCreate', 'StaffHook.generateSlug')
+        this.addHook('beforeSave', 'StaffHook.generateSlug')
+    }
+
+    convocatoria = () => {
+        return this.belongsTo('App/Models/Convocatoria');
     }
 
 }

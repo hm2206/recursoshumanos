@@ -10,7 +10,7 @@ class RequisitoSchema extends Schema {
       table.string("slug").unique();
       table.string("descripcion");
       table.json("body");
-      table.integer("personal_id");
+      table.integer("staff_id");
       table.timestamps()
     })
   }

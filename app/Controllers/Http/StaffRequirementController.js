@@ -4,6 +4,7 @@ const { validation, ValidatorError } = require('validator-error-adonis');
 const { validate } = use('Validator');
 const Convocatoria = use('App/Models/Convocatoria');
 const Staff = use('App/Models/StaffRequirement');
+const Requisito = use('App/Models/Requisito');
 
 /** @typedef {import('@adonisjs/framework/src/Request')} Request */
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
@@ -116,7 +117,18 @@ class StaffRequirementController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async show ({ params, request, response, view }) {
+  async show ({ params, request }) {
+    let staff = await Staff.query()
+      .with('convocatoria')
+      .where('id', params.id)
+      .first();
+    // response 
+    return {
+      success: true,
+      message: "list staff",
+      status: 201,
+      staff
+    }
   }
 
   /**
@@ -127,7 +139,56 @@ class StaffRequirementController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async update ({ params, request, response }) {
+  async update ({ params, request }) {
+    // validar staff
+    let staff = await Staff.query()
+      .where("id", params.id)
+      .where("estado", "CREADO")
+      .first();
+    if (!staff) throw new Error(`El requerimiento de personal no está disponible`);
+     // validar input
+     await validation(validate, request.all(), {
+      sede_id: "required",
+      dependencia_id: "required",
+      perfil_laboral_id: "required",
+      cantidad: "required",
+      honorarios: "required",
+      meta_id: "required",
+      fecha_inicio: "required|date",
+      fecha_final: "required|date",
+      supervisora_id: "required",
+      deberes: "required",
+      bases: "required"
+    });
+    try {
+        staff.convocatoria_id = request.input('convocatoria_id'),
+        staff.sede_id = request.input('sede_id'),
+        staff.dependencia_id = request.input('dependencia_id'),
+        staff.perfil_laboral_id = request.input('perfil_laboral_id'),
+        staff.cantidad = request.input('cantidad'),
+        staff.honorarios = request.input('honorarios'),
+        staff.meta_id = request.input('meta_id'),
+        staff.fecha_inicio = request.input('fecha_inicio'),
+        staff.fecha_final = request.input('fecha_final'),
+        staff.supervisora_id = request.input('supervisora_id'),
+        staff.deberes = request.input('deberes'),
+        staff.bases = request.input('bases', JSON.stringify([])),
+        staff.renovacion = request.input('renovacion', staff.renovacion);
+        await staff.save();
+    } catch (error) {
+      switch (error.code) {
+        case 'ER_DUP_ENTRY':
+          throw new ValidatorError([ { field: 'perfil_laboral_id', message: 'El requerimiento de personal ya está en uso'} ])
+        default:
+          throw new Error("No se pudó guardar el requerimiento de personal");
+      }
+    }
+    // response
+    return {
+      success: true,
+      status: 201,
+      message: "El Requerimiento de Personal se guardo correctamente!"
+    }
   }
 
   /**
@@ -140,6 +201,26 @@ class StaffRequirementController {
    */
   async destroy ({ params, request, response }) {
   }
+
+  requisitos = async ({ params }) => {
+    let requisitos = await Requisito.query()
+      .where('staff_id', params.id)
+      .fetch();
+    // convertir bodies
+    requisitos = await requisitos.toJSON();
+    await requisitos.map(req => {
+      req.body = JSON.parse(req.body);
+      return req;
+    });
+    // response
+    return {
+      success: true,
+      message: "SUCCESS_GET",
+      status: 201,
+      requisitos
+    }
+  }
+
 }
 
 module.exports = StaffRequirementController

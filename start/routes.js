@@ -38,9 +38,12 @@ addGroup(Route.group(() => {
   // Ruta Requerimientos de Personal
   Route.get('staff_requirement', 'StaffRequirementController.index').middleware(['entityId']);
   Route.post('staff_requirement', 'StaffRequirementController.store');
+  Route.get('staff_requirement/:id', 'StaffRequirementController.show');
+  Route.post('staff_requirement/:id/update', 'StaffRequirementController.update');
+  Route.get('staff_requirement/:id/requisitos', 'StaffRequirementController.requisitos');
 
   // Ruta de Requisitos para el requerimiento del personal
-  Route.resource('requisito', 'RequisitoController').apiOnly();
+  Route.post('requisito', 'RequisitoController.store');
 
   // Ruta actividad
   Route.resource('actividad', 'ActividadController').apiOnly();
