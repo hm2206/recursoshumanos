@@ -24,7 +24,7 @@ class RequisitoController {
             success: true,
             status: 201,
             code: 'SUCCESS_SAVE',
-            message: "El requiisto se guardó correctamente!",
+            message: "El requisito se guardó correctamente!",
             requisito
         }
     }

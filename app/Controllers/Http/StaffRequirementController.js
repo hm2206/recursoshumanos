@@ -203,6 +203,10 @@ class StaffRequirementController {
   async destroy ({ params, request, response }) {
   }
 
+  /**
+   * obtener los requisitos del staff
+   * @param {*} param0 
+   */
   requisitos = async ({ params }) => {
     let requisitos = await Requisito.query()
       .where('staff_id', params.id)
@@ -222,6 +226,10 @@ class StaffRequirementController {
     }
   }
 
+  /**
+   * obtener etapa del staff
+   * @param {*} param0 
+   */
   etapa = async ({ params, request }) => {
     let estado = request.input('estado', 'CURRICULAR');
     let page = request.input('page', 1);
@@ -236,6 +244,74 @@ class StaffRequirementController {
       status: 201,
       etapa
     }
+  }
+  
+  /**
+   * estado
+   * @param {*} estado 
+   */
+  _estado = async (id, estado) => {
+    let staff = await Staff.find(id);
+    if (!staff) throw new Error(`El requerimiento de personal no está disponible`);
+    // validar estado
+    switch (estado) {
+      case 'PUBLICADO':
+        if (staff.estado != 'CREADO') throw new Error("No se puede publicar el requerimiento de personal");
+        break;
+      case 'TERMINADO':
+        if (staff.estado != 'PUBLICADO') throw new Error("No se puede terminar el requerimiento de personal");
+        break;
+      case 'CANCELADO':
+        if (staff.estado != 'CREADO') throw new Error("No se puede cancelar el requerimiento de personal");
+        break;
+      default:
+        break;
+    }
+    // actualizar estado
+    staff.estado = estado;
+    await staff.save();
+  }
+
+  /**
+   * publicar staff
+   * @param {*} param0 
+   */
+  publicar = async ({ params }) => {
+    await this._estado(params.id, "PUBLICADO");
+    // response
+    return {
+      success: true,
+      status: 201,
+      message: "El requerimiento de personal se publicó correctamente!"
+    } 
+  }
+
+  /**
+   * terminar staff
+   * @param {*} param0 
+   */
+  terminar = async ({ params }) => {
+    await this._estado(params.id, "TERMINADO");
+    // response
+    return {
+      success: true,
+      status: 201,
+      message: "El requerimiento de personal se termino correctamente!"
+    } 
+  }
+
+  /**
+   * cancelar staff
+   * @param {*} param0 
+   */
+  cancelar = async ({ params }) => {
+    await this._estado(params.id, "CANCELADO");
+    // response
+    return {
+      success: true,
+      status: 201,
+      message: "El requerimiento de personal se cancelo correctamente!"
+    } 
   }
 
 }

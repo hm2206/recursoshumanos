@@ -42,6 +42,9 @@ addGroup(Route.group(() => {
   Route.post('staff_requirement/:id/update', 'StaffRequirementController.update');
   Route.get('staff_requirement/:id/requisitos', 'StaffRequirementController.requisitos');
   Route.get('staff_requirement/:id/etapa', 'StaffRequirementController.etapa');
+  Route.post('staff_requirement/:id/publicar', 'StaffRequirementController.publicar');
+  Route.post('staff_requirement/:id/terminar', 'StaffRequirementController.terminar');
+  Route.post('staff_requirement/:id/cancelar', 'StaffRequirementController.cancelar');
 
   // Ruta de Requisitos para el requerimiento del personal
   Route.post('requisito', 'RequisitoController.store');
