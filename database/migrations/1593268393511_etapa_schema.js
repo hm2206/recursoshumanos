@@ -8,7 +8,7 @@ class EtapaSchema extends Schema {
     this.create('etapas', (table) => {
       table.increments()
       table.integer('postulante_id');
-      table.integer('personal_id');
+      table.integer('staff_id');
       table.integer('current').default(1);
       table.decimal('puntaje', 10, 2).default(0);
       table.enum('estado', ['CURRICULAR', 'CONOCIMIENTO', 'ENTREVISTA', 'GANADOR']);

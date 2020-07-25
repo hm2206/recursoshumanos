@@ -161,7 +161,9 @@ class ConvocatoriaController {
 
   staffRequirements = async ({ params, request }) => {
     let staff = await StaffRequirement.query()
+      .join('perfil_laborals as per', 'per.id', 'staff_requirements.perfil_laboral_id')
       .where('convocatoria_id', params.id)
+      .select('staff_requirements.*', 'per.nombre as perfil_laboral')
       .fetch();
     // response
     return {

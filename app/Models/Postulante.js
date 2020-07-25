@@ -7,6 +7,10 @@ const PostulanteHook = require('./Hooks/PostulanteHook');
 
 class Postulante extends Model {
 
+    static get hidden () {
+        return ['token']
+      }
+
     static boot () {
         super.boot();
 

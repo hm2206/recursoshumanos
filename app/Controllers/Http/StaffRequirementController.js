@@ -5,6 +5,7 @@ const { validate } = use('Validator');
 const Convocatoria = use('App/Models/Convocatoria');
 const Staff = use('App/Models/StaffRequirement');
 const Requisito = use('App/Models/Requisito');
+const Etapa = use('App/Models/Etapa');
 
 /** @typedef {import('@adonisjs/framework/src/Request')} Request */
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
@@ -218,6 +219,22 @@ class StaffRequirementController {
       message: "SUCCESS_GET",
       status: 201,
       requisitos
+    }
+  }
+
+  etapa = async ({ params, request }) => {
+    let estado = request.input('estado', 'CURRICULAR');
+    let page = request.input('page', 1);
+    let etapa = await Etapa.query()
+      .with('postulante')
+      .where('estado', '=', estado)
+      .where('staff_id', '=', params.id)
+      .paginate(page, 20);
+    // response 
+    return {
+      success: true,
+      status: 201,
+      etapa
     }
   }
 

@@ -4,6 +4,11 @@
 const Model = use('Model')
 
 class Etapa extends Model {
+
+    postulante = () => {
+        return this.belongsTo('App/Models/Postulante');
+    }
+
 }
 
 module.exports = Etapa
