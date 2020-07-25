@@ -128,7 +128,7 @@ class ConvocatoriaController {
     return {
       success: true,
       code: 201,
-      message: "La convocatoria se registró correctamente!"
+      message: "La convocatoria se guardo correctamente!"
     }
   }
 
@@ -159,6 +159,10 @@ class ConvocatoriaController {
     }
   }
 
+  /**
+   * staff de la convocatoria
+   * @param {*} param0 
+   */
   staffRequirements = async ({ params, request }) => {
     let staff = await StaffRequirement.query()
       .join('perfil_laborals as per', 'per.id', 'staff_requirements.perfil_laboral_id')
@@ -171,6 +175,74 @@ class ConvocatoriaController {
       status: 201,
       staff 
     }
+  }
+
+  /**
+   * estado
+   * @param {*} estado 
+   */
+  _estado = async (id, estado) => {
+    let convocatoria = await Convocatoria.find(id);
+    if (!convocatoria) throw new Error(`La convocatoria no está disponible`);
+    // validar estado
+    switch (estado) {
+      case 'PUBLICADO':
+        if (convocatoria.estado != 'CREADO') throw new Error("No se puede publicar la convocatoria");
+        break;
+      case 'TERMINADO':
+        if (convocatoria.estado != 'PUBLICADO') throw new Error("No se puede terminar la convocatoria");
+        break;
+      case 'CANCELADO':
+        if (convocatoria.estado != 'CREADO') throw new Error("No se puede cancelar la convocatoria");
+        break;
+      default:
+        break;
+    }
+    // actualizar estado
+    convocatoria.estado = estado;
+    await convocatoria.save();
+  }
+
+  /**
+   * publicar convocatoria
+   * @param {*} param0 
+   */
+  publicar = async ({ params }) => {
+    await this._estado(params.id, "PUBLICADO");
+    // response
+    return {
+      success: true,
+      status: 201,
+      message: "La convocatoria se publicó correctamente!"
+    } 
+  }
+
+  /**
+   * terminar convocatoria
+   * @param {*} param0 
+   */
+  terminar = async ({ params }) => {
+    await this._estado(params.id, "TERMINADO");
+    // response
+    return {
+      success: true,
+      status: 201,
+      message: "La convocatoria se termino correctamente!"
+    } 
+  }
+
+  /**
+   * cancelar convocatoria
+   * @param {*} param0 
+   */
+  cancelar = async ({ params }) => {
+    await this._estado(params.id, "CANCELADO");
+    // response
+    return {
+      success: true,
+      status: 201,
+      message: "La convocatoria se cancelo correctamente!"
+    } 
   }
 
 }

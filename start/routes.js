@@ -34,6 +34,9 @@ addGroup(Route.group(() => {
   Route.post('convocatoria/:id/update', 'ConvocatoriaController.update');
   Route.get('convocatoria/:id/actividades', 'ConvocatoriaController.actividades');
   Route.get('convocatoria/:id/staff_requirements', 'ConvocatoriaController.staffRequirements');
+  Route.post('convocatoria/:id/publicar', 'ConvocatoriaController.publicar');
+  Route.post('convocatoria/:id/terminar', 'ConvocatoriaController.terminar');
+  Route.post('convocatoria/:id/cancelar', 'ConvocatoriaController.cancelar');
 
   // Ruta Requerimientos de Personal
   Route.get('staff_requirement', 'StaffRequirementController.index').middleware(['entityId']);
