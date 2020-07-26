@@ -2,6 +2,8 @@
 
 const Dependencia = use('App/Models/Dependencia');
 const PerfilLaboral = use('App/Models/PerfilLaboral');
+const { validation } = require('validator-error-adonis');
+const { validate } = use('Validator');
 
 /**
  * Resourceful controller for interacting with dependencias
@@ -39,6 +41,25 @@ class DependenciaController {
    * @param {Response} ctx.response
    */
   async store ({ request, response }) {
+    await validation(validate, request.all(), {
+      nombre: 'required|unique:dependencias',
+      descripcion: 'required',
+      ubicacion: 'required',
+      type: 'required'
+    });
+    // guardar
+    await Dependencia.create({
+      nombre: request.input('nombre'),
+      descripcion: request.input('descripcion'),
+      ubicacion: request.input('ubicacion'),
+      type: request.input('type')
+    });
+    // response 
+    return {
+      success: true,
+      status: 201,
+      message: "La dependencia se creó correctamente!"
+    }
   }
 
   /**

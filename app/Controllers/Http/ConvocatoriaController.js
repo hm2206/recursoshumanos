@@ -15,6 +15,7 @@ const StaffRequirement = use('App/Models/StaffRequirement');
  * Resourceful controller for interacting with convocatorias
  */
 class ConvocatoriaController {
+
   /**
    * Show a list of all convocatorias.
    * GET convocatorias

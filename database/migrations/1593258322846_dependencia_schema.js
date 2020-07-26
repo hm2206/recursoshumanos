@@ -11,6 +11,7 @@ class DependenciaSchema extends Schema {
       table.string("descripcion");
       table.string('ubicacion');
       table.enum('type', ['OTRO', 'ESCUELA', 'FACULTAD', 'OFICINA']).defaultTo('OTRO');
+      table.boolean('state').defaultTo(true);
       table.timestamps()
     })
   }

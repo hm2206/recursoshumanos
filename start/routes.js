@@ -12,12 +12,17 @@ const addGroup = (group) => {
 // ruta v1
 addGroup(Route.group(() => {
 
+  // ruta publica de convocatoria
+  Route.get('public/convocatoria', 'public/ConvocatoriaPublicController.index');
+  Route.get('public/convocatoria/:id/staff_requirement', 'public/ConvocatoriaPublicController.staffRequirement');
+
   // Ruta de Postulantes
   Route.get('postulante', 'PostulanteController.index');
   Route.post('postulante', 'PostulanteController.store');
 
   // Ruta de Dependencias
   Route.get('dependencia', 'DependenciaController.index');
+  Route.post('dependencia', 'DependenciaController.store');
   Route.get('dependencia/:id', 'DependenciaController.show');
   Route.get('dependencia/:id/perfil_laboral', 'DependenciaController.perfilLaboral');
 
