@@ -24,6 +24,7 @@ addGroup(Route.group(() => {
   Route.get('dependencia', 'DependenciaController.index');
   Route.post('dependencia', 'DependenciaController.store');
   Route.get('dependencia/:id', 'DependenciaController.show');
+  Route.post('dependencia/:id/update', 'DependenciaController.update');
   Route.get('dependencia/:id/perfil_laboral', 'DependenciaController.perfilLaboral');
 
   // Ruta para el Perfil Laboral

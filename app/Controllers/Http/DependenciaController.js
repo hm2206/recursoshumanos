@@ -2,7 +2,7 @@
 
 const Dependencia = use('App/Models/Dependencia');
 const PerfilLaboral = use('App/Models/PerfilLaboral');
-const { validation } = require('validator-error-adonis');
+const { validation, ValidatorError } = require('validator-error-adonis');
 const { validate } = use('Validator');
 
 /**
@@ -18,10 +18,11 @@ class DependenciaController {
    * @param {Response} ctx.response
    */
   async index ({ request, response }) {
-    let { page, query_search } = request.all();
+    let { page, query_search, type } = request.all();
     let dependencia = Dependencia.query();
     // filtro
     if (query_search) dependencia.whereRaw(`(nombre like '%${query_search}%' OR descripcion like '%${query_search}%')`);
+    if (type) dependencia.where('type', '=', type);
     // get dependencia
     dependencia = await dependencia.paginate(page || 1, 20);
     // response 
@@ -71,7 +72,14 @@ class DependenciaController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async show ({ params, request, response, view }) {
+  async show ({ params, request }) {
+    let dependencia = await Dependencia.find(params.id);
+    if (!dependencia) throw new Error(`No se encontró la dependencia`);
+    return {
+      success: true,
+      status: 201,
+      dependencia
+    }
   }
 
   /**
@@ -110,6 +118,33 @@ class DependenciaController {
    * @param {Response} ctx.response
    */
   async update ({ params, request, response }) {
+    await validation(validate, request.all(), {
+      nombre: 'required',
+      descripcion: 'required',
+      ubicacion: 'required',
+      type: 'required'
+    });
+    // validar 
+    let dependencia = await Dependencia.find(params.id);
+    if (!dependencia) throw new Error(`No se encontró la dependencia`);
+    // validar nombre
+    let valName = await Dependencia.query()
+      .where('nombre', '=', request.input('nombre'))
+      .where('id', '<>', dependencia.id)
+      .getCount('id');
+    if (valName) throw new ValidatorError([ { field: 'nombre', message: `El nombre ya está en uso` } ]);
+    // actualizar
+    dependencia.nombre = request.input('nombre');
+    dependencia.descripcion = request.input('descripcion')
+    dependencia.ubicacion = request.input('ubicacion')
+    dependencia.type = request.input('type');
+    await dependencia.save();
+    // response
+    return {
+      success: true,
+      status: 201,
+      message: "La dependencia se actualizó correctamente!"
+    }
   }
 
   /**
