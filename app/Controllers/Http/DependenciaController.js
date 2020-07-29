@@ -20,9 +20,11 @@ class DependenciaController {
   async index ({ request, response }) {
     let { page, query_search, type } = request.all();
     let dependencia = Dependencia.query();
+    let ids = request.input('ids', null);
     // filtro
     if (query_search) dependencia.whereRaw(`(nombre like '%${query_search}%' OR descripcion like '%${query_search}%')`);
     if (type) dependencia.where('type', '=', type);
+    if (ids) dependencia.whereIn('id', ids);
     // get dependencia
     dependencia = await dependencia.paginate(page || 1, 20);
     // response 

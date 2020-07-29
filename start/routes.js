@@ -28,7 +28,8 @@ addGroup(Route.group(() => {
   Route.get('dependencia/:id/perfil_laboral', 'DependenciaController.perfilLaboral');
 
   // Ruta para el Perfil Laboral
-  Route.resource('perfil_laboral', 'PerfilLaboralController').apiOnly();
+  Route.get('perfil_laboral', 'PerfilLaboralController.index')
+  Route.get('perfil_laboral/:id', 'PerfilLaboralController.show')
 
   // Ruta para configurar el Perfil Laboral y Dependencia
   Route.resource('config_perfil_laboral', 'ConfigPerfilLaboralController').apiOnly();

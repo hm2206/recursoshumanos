@@ -4,6 +4,8 @@
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
 /** @typedef {import('@adonisjs/framework/src/View')} View */
 
+const PerfilLaboral = use('App/Models/PerfilLaboral');
+
 /**
  * Resourceful controller for interacting with perfillaborals
  */
@@ -17,19 +19,22 @@ class PerfilLaboralController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async index ({ request, response, view }) {
-  }
-
-  /**
-   * Render a form to be used for creating a new perfillaboral.
-   * GET perfillaborals/create
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async create ({ request, response, view }) {
+  index = async ({ request }) => {
+    let { page, query_search } = request.all();
+    let ids = request.input('ids', null);
+    let perfil_laboral = PerfilLaboral.query();
+    // filtro
+    if (query_search) perfil_laboral.where("nombre", "like", `%${query_search}%`)
+    // filter ids
+    if (ids) perfil_laboral.whereIn('id', ids);
+    // paginate
+    perfil_laboral = await perfil_laboral.paginate(page || 1, 20);
+    // response
+    return {
+      success: true,
+      status: 201,
+      perfil_laboral
+    };
   }
 
   /**
@@ -52,19 +57,15 @@ class PerfilLaboralController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async show ({ params, request, response, view }) {
-  }
-
-  /**
-   * Render a form to update an existing perfillaboral.
-   * GET perfillaborals/:id/edit
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async edit ({ params, request, response, view }) {
+  show = async ({ params, request }) => {
+    let perfil_laboral = await PerfilLaboral.find(params.id);
+    if (!perfil_laboral) throw new Error(`No se encontró el perfil laboral`);
+    // response
+    return {
+      success: true,
+      status: 201,
+      perfil_laboral
+    }
   }
 
   /**
