@@ -9,7 +9,7 @@ class ActividadSchema extends Schema {
       table.increments()
       table.string("descripcion").notNullable();
       table.string("fecha_inicio").notNullable();
-      table.date('fecha_final').notNullable();
+      table.string('fecha_final').notNullable();
       table.string('responsable').notNullable();
       table.integer('convocatoria_id').notNullable();
       table.boolean("estado").defaultTo(true);

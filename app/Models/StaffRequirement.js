@@ -16,6 +16,10 @@ class StaffRequirement extends Model {
         return this.belongsTo('App/Models/Convocatoria');
     }
 
+    perfil_laboral = () => {
+        return this.belongsTo('App/Models/PerfilLaboral');
+    }
+
 }
 
 module.exports = StaffRequirement

@@ -15,6 +15,12 @@ addGroup(Route.group(() => {
   // ruta publica de convocatoria
   Route.get('public/convocatoria', 'public/ConvocatoriaPublicController.index');
   Route.get('public/convocatoria/:id/staff_requirement', 'public/ConvocatoriaPublicController.staffRequirement');
+  Route.get('public/convocatoria/:id/actividades', 'public/ConvocatoriaPublicController.actividades');
+
+  // ruta publica del staff
+  Route.get('public/staff_requirement/:slug', 'public/StaffRequirementPublicController.show');
+  Route.get('public/staff_requirement/:slug/dependencia', 'public/StaffRequirementPublicController.dependencia');
+  Route.get('public/staff_requirement/:slug/requisitos', 'public/StaffRequirementPublicController.requisitos');
 
   // Ruta de Postulantes
   Route.get('postulante', 'PostulanteController.index');
