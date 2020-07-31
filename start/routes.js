@@ -12,6 +12,16 @@ const addGroup = (group) => {
 // ruta v1
 addGroup(Route.group(() => {
 
+  // ruta para generar token de postulante
+  Route.post('public/login', 'public/AuthController.login');
+  Route.post('public/verification', 'public/AuthController.verification')
+
+  // ruta auth del postulante
+  Route.get('auth/me', 'public/AuthController.me').middleware(['jwt']);
+  Route.get('auth/etapa/:slug', 'public/AuthController.etapa').middleware(['jwt']);
+  Route.get('auth/my_postulacion', 'public/AuthController.my_postulacion').middleware(['jwt']);
+  Route.get('auth/postular/:id', 'public/AuthController.postular').middleware(['jwt']);
+  
   // ruta publica de convocatoria
   Route.get('public/convocatoria', 'public/ConvocatoriaPublicController.index');
   Route.get('public/convocatoria/:id/staff_requirement', 'public/ConvocatoriaPublicController.staffRequirement');

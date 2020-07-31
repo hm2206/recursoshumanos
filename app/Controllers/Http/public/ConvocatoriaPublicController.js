@@ -28,7 +28,7 @@ class ConvocatoriaPublicController {
       .join('perfil_laborals as per', 'per.id', 'staff_requirements.perfil_laboral_id')
       .select('staff_requirements.*', 'dep.nombre as departamento', 'per.nombre as perfil_laboral')
       .where('con.id', params.id)
-      .whereIn('staff_requirements.estado', ['PUBLICADO'])
+      .whereIn('staff_requirements.estado', ['PUBLICADO', 'TERMINADO'])
       .paginate(page || 1, 20);
     // response 
     return {
